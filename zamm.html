@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заметки</title>
+  </head>
+  <body>
+    <div>
+      <h2>Завершённые</h2>
+      <em>Нажмите на заметку, чтобы её удалить</em><br>
+      <input type="text" id="completion" placeholder="Введите заметку..."><br><br>
+      <button id="butC">Ввести</button>
+      <ul id="allC"></ul>
+    </div>
+    <div>
+      <h2>Не завершённые</h2>
+       <input type="text" id="not-completion" placeholder="Введите заметку..."><br><br>
+      <button>Ввести</button>
+      <ul id="allNC"></ul>
+    </div>
+    <script>
+      const listC = document.querySelector('#allC');
+      let todos1 = [];
+
+      const butC = document.querySelector('#butC');
+      butC.addEventListener('click', function (event) {
+        event.preventDefault();
+        const Input = document.getElementById('completion').value;
+        
+        const newTodo = {
+          id: generate(),
+          text: Input,
+        };
+        todos1.push(newTodo);
+        const todosString = JSON.stringify(todos1);
+        localStorage.setItem('Mytodos', todosString);
+        
+        const listItem = document.createElement('li');
+        listItem.textContent = Input;
+        listItem.dataset.id = newTodo.id;
+        listC.appendChild(listItem);                                                    
+      });
+
+      listC.addEventListener('click', function (event) {
+        if (event.target.tagName === 'LI') {
+          const idToDelete = Number(event.target.dataset.id);
+          todos1 = todos1.filter(todo => todo.id !== idToDelete);
+        
+          const todosString = JSON.stringify(todos1);
+          localStorage.setItem('Mytodos', todosString);
+          
+          listC.innerHTML = '';
+          todos1.forEach(todo => {
+            const listItem1 = document.createElement('li');
+            listItem1.textContent = todo.text;
+            listItem1.dataset.id = todo.id;
+            listC.appendChild(listItem1);
+          });
+        }
+      });
+      function generate() {
+        return Date.now();
+      }
+       
+      document.addEventListener('DOMContentLoaded', function () {
+        const savedData = localStorage.getItem('Mytodos');
+        if (savedData) {
+          const myObj = JSON.parse(savedData);
+          
+          myObj.forEach(myOb => {
+            const TheList = document.createElement('li');
+            TheList.textContent = myOb.text;
+            listC.appendChild(TheList);
+          });   
+        }
+      });
+    </script>
+  </body>
+</html>
